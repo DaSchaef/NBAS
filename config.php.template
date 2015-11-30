@@ -1,0 +1,9 @@
+<?php
+/** Config Datei mit dem Einträgen für die konkreten NAMI Einsatz.
+    Diese Datei muss angepasst werden! */
+
+    $config = array();
+    $config["namiserver"] = "https://namitest.dpsg.de/";
+    $config["apiuser_mitgliedsnummer"] = "123456";
+    $config["apiuser_password"] = "HIERPASSWORT";
+ ?>
