@@ -22,8 +22,10 @@ Für NBAS wird benötigt
 # Installation
 - In Zielverzeichnis gehen
 - Download NBAS: 
-`git clone https://github.com/DaSchaef/NBAS.git
+```git clone https://github.com/DaSchaef/NBAS.git
+```
 - config.php.template kopieren nach config.php
 - In config.php die notwendigen Einstellungen/Zugangsdaten setzen
 - NBAS ausführen mit: 
-`php index.php
+```php index.php
+```
