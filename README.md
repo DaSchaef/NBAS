@@ -5,6 +5,9 @@ NBAS - NAMI Bezirks API Sammlung, Eine kleine Sammlung des Codes, den wir im DPS
 Ich habe den Code unter GPL gestellt in dem Gedanke, dass wir DPSGler miteinander teilen sollen. Hier möchte ich euch auch noch einmal auf http://ncm.dpsg.de hinweisen,
 auch wenn es dort nicht sehr aktiv aussehen mag, dort lesen einige Entwickler mit. Also traut euch!
 
+# Danksagung
+Ein großes Dankeschön an Daniel von der der AG NCM und an @fabianlipp für sein tolles fabianlipp/jnami.
+
 # Features
 NBAS ist eine kleine Scriptsammlung, die aus NAMI die Emailadressen der Leiter unseres Bezirks extrahieren und in Mailman einspielen soll.
 Im jetzigen Zustand ist NBAS dafür ausgelegt von der Konsole aus ausgeführt zu werden.
