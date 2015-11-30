@@ -1,5 +1,5 @@
 <?php
-/** Config Datei mit dem Einträgen für die konkreten NAMI Einsatz.
+/** Config Datei mit dem Einträgen für den konkreten NAMI Einsatz.
     Diese Datei muss angepasst werden! */
 
     $config = array();

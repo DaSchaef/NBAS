@@ -90,7 +90,7 @@ class MailmanList_class {
         $members_new_size = count($members_new);
 
         $abweichung = $members_size/100.0*abs($members_size-$members_new_size);
-        if($abweichung >= $this->deviation_percent_warning) {
+        if($abweichung >= $this->deviation_percent_error) {
             $this->error = true;
             throw new RuntimeException("Abbruch, es würden " . $abweichung . "% geändert");
         }
