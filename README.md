@@ -21,6 +21,7 @@ Für NBAS wird benötigt
 - php
 - php-curl
 - Ein API Zugang (siehe http://ncm.dpsg.de)
+- Schreibrechte auf die Datei ./nami_curl_cookies.txt für die Cookies
 
 # Installation
 - In Zielverzeichnis gehen
@@ -30,3 +31,4 @@ Für NBAS wird benötigt
 - In config.php die notwendigen Einstellungen/Zugangsdaten setzen
 - NBAS ausführen mit: 
 `php index.php`
+- Bitte beachte, dass im Arbeitsverzeichnis eine Datei nami_curl_cookies.txt von NBAS erzeugbar oder beschreibbar sein muss. Dies ist notwendig für die Session-Cookies.
