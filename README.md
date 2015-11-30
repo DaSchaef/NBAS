@@ -13,7 +13,7 @@ Dadurch müssen die Stammesvorstände nur noch ein Datensatz verwalten und könn
 Zur Zeit befindet sich NBAS noch in der Entwicklung.
 Die NAMI API Abfrage klappt, die Mailman-Schnittstelle ist noch nicht funktionsfähig.
 
-# Requirements / Vorraussetzungen
+# Requirements / Voraussetzungen
 Für NBAS wird benötigt
 - php
 - php-curl
