@@ -6,7 +6,7 @@ Ich habe den Code unter GPL gestellt in dem Gedanke, dass wir DPSGler miteinande
 auch wenn es dort nicht sehr aktiv aussehen mag, dort lesen einige Entwickler mit. Also traut euch!
 
 # Danksagung
-Ein großes Dankeschön an Daniel von der der AG NCM und an @fabianlipp für sein tolles fabianlipp/jnami.
+Ein großes Dankeschön an Daniel von der der AG NCM und an fabianlipp für sein tolles fabianlipp/jnami.
 
 # Features
 NBAS ist eine kleine Scriptsammlung, die aus NAMI die Emailadressen der Leiter unseres Bezirks extrahieren und in Mailman einspielen soll.
