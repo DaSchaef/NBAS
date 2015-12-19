@@ -96,13 +96,14 @@ class NamiConnection_class {
         $this->nami_user = $config["apiuser_mitgliedsnummer"];
         $this->nami_password = $config["apiuser_password"];
 
-        $url = parse_url($this->nami_server);
+        $url = parse_url($config["namiserver"]);
         if($url["scheme"] !== "https") {
             $this->connection_status = "ERR";
             $this->current_message = "Fehler: config[\"namiserver\"] muss mit https:// starten, NAMI leitet nicht https um, das wird hier nicht berücksichtigt.";
             throw new RuntimeException($this->current_message);
         }
         $this->nami_server = $url["scheme"] . "://" . $url["host"];
+        print_r($this->nami_server);
 
         if($this->search_json == NULL and json_last_error() !== JSON_ERROR_NONE) {
                 throw new RuntimeException(HttpWrapper_class::$_json_messages[json_last_error()]);
@@ -276,6 +277,7 @@ class NamiConnection_class {
 
         // Prüfe HTTP Status Code
         if($this->connection_status == AUTH and $response->httpcode != 302) { // Auth muss mit 302 antworten
+            print_r($response);
             $this->connection_status = "ERR";
             $this->current_message = "Fehler: Fehler beim Anfragen der Session, der HTTP Code ist nicht 302: " . $response->httpcode . " -- " . $this->connection_status;
             throw new RuntimeException($this->current_message);
