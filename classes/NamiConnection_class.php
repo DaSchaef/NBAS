@@ -65,10 +65,6 @@ class NamiConnection_class {
     */
     function NamiConnection_class($config) {
         $this->HttpWrapper = new HttpWrapper_class();
-        $this->auth_url = $this->nami_server . $this->auth_url;
-        $this->search_url = $this->nami_server . $this->search_url;
-        $this->search_json = json_decode(NamiConnection_class::$search_json_str);
-
         if(gettype($config) !== "array") {
             $this->connection_status = "ERR";
             $this->current_message = "Fehler: Parameter ist kein Array";
@@ -103,7 +99,10 @@ class NamiConnection_class {
             throw new RuntimeException($this->current_message);
         }
         $this->nami_server = $url["scheme"] . "://" . $url["host"];
-        print_r($this->nami_server);
+
+        $this->auth_url = $this->nami_server . $this->auth_url;
+        $this->search_url = $this->nami_server . $this->search_url;
+        $this->search_json = json_decode(NamiConnection_class::$search_json_str);
 
         if($this->search_json == NULL and json_last_error() !== JSON_ERROR_NONE) {
                 throw new RuntimeException(HttpWrapper_class::$_json_messages[json_last_error()]);

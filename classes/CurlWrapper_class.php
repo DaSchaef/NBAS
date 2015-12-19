@@ -54,7 +54,7 @@ class CurlWrapper_class {
                 throw new RuntimeException("\nKann im aktuellen Verzeichnis keine Datei anlegen\nFür die cookies muss das Programm eine Datei " . self::COOKIE_FILE . " anlegen und schreiben können.\n");
             }
 
-            if(!is_writable (self::COOKIE_FILE)) {
+            if(file_exists(self::COOKIE_FILE) && !is_writable(self::COOKIE_FILE)) {
                 throw new RuntimeException("\nFür die cookies muss das Programm eine Datei " . self::COOKIE_FILE . " anlegen und schreiben können.\n");
             }
         }
