@@ -22,9 +22,11 @@
 */
 
 include_once 'MailmanList_class.php';
+include_once 'GitHandler_class.php';
 
 /** Klasse, welche die Informationen einer Mailing-Liste enthält*/
 class Mailman_class {
+    protected $git;
 
     /** Beim Konstruktor wird gleich geprüft, ob alle notwendigen Befehle da sin*/
     function Mailman_class() {
@@ -35,14 +37,13 @@ class Mailman_class {
         if(!$this->command_exist("./add_members")) {
             throw new RuntimeException("Kann kein Programm zu add_members findens");
         }
-
     }
 
     /** Erzeugt ein MailmanList Objekt, das im Prinzip ein Array aus Emails ist (mit Prüfungen)
         @param name Name der Liste
         @return MailmanList_class Object
     */
-    function getList($name) {
+    public function getList($name) {
         $type_value = gettype($name);
         if($type_value !== "string") {
             throw new RuntimeException("1. Argument muss String sein " . $type_value);
@@ -64,7 +65,7 @@ class Mailman_class {
     /** Löscht alle Teilnehmer aus einer Liste
         @param listname Name der Liste
     */
-    function emptyList($listname) {
+    public function emptyList($listname) {
         $type_value = gettype($listname);
         if($type_value !== "string") {
             throw new RuntimeException("1. Argument muss String sein " . $type_value);
@@ -78,7 +79,7 @@ class Mailman_class {
     /** Aktualisiert die Liste mit neuen Einträgen
         @param newentries_array Neue Einträge als array mit emails als elemente
         @param listname die zu aktualisierende Liste*/
-    function updateList($newentries_array, $listname) {
+    public function updateList($newentries_array, $listname) {
         $type_value = gettype($newentries_array);
         if($type_value !== "array") {
             throw new RuntimeException("1. Argument muss Array sein " . $type_value);
@@ -97,24 +98,22 @@ class Mailman_class {
 
         $this->emptyList($listname);
 
+        $list->emptyMembers();
         $list->replaceMembers($newentries_array);
 
         if(!$list->checkConditions()) { // Es gab Warnungen
             echo("Warnungen in updateList() - After\n");
+            echo("Listenname: " . $listname . "\n");
             echo($list->message);
         }
 
-        foreach ($list->members as $key => $email) {
-            if(!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-                throw new RuntimeException("Keine gültige Email: " . $email);
-            }
-            exec("./add_members " . $list->name . " " . $email, $added, $returncode);
-            if($returncode !== 0) {
-                echo("Warnungen in addmembers\n");
-                echo("Add Members Return Code ist nicht 0: " . $returncode . " " . $email);
-            }
-            //@TODO Check Ausgabe
-        }
+        $list->write();
+
+        /*exec("./add_members " . $list->name . " " . $email, $added, $returncode);
+        if($returncode !== 0) {
+            echo("Warnungen in addmembers\n");
+            echo("Add Members Return Code ist nicht 0: " . $returncode . " " . $email);
+        }*/
     }
 
     /** Interne Helper Funktion, die prüft ob ein Kommando auf dem Server verfügbar ist.

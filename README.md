@@ -13,15 +13,26 @@ NBAS ist eine kleine Scriptsammlung, die aus NAMI die Emailadressen der Leiter u
 Im jetzigen Zustand ist NBAS dafür ausgelegt von der Konsole aus ausgeführt zu werden.
 Dadurch müssen die Stammesvorstände nur noch ein Datensatz verwalten und können trotzdem sicher sein, dass auch die Bezirks-Emails bei der Leiterrunde ankommen.
 
+Die NBAS Mailman Schnittstelle hält im TMP Verzeichnis die Mailman-Mitglieder unter GIT Verwaltung.
+Dies is ein Sicherheits-Feature, damit notfalls schnell Änderungen rückgängig gemacht werden können.
+
 Zur Zeit befindet sich NBAS noch in der Entwicklung.
 Die NAMI API Abfrage klappt, die Mailman-Schnittstelle ist noch nicht funktionsfähig.
 
+# Datenschutz
+Bitte beachtet, dass die temporären Dateien im tmp Verzeichnis unter GIT Kontrolle gehalten werden.
+Aus Gründen des Datenschutzes solltet ihr das Verzeichnis regelmäßig leeren (nicht löschen!) und dabei auch
+das GIT Repository (.git Ordner) löschen.
+NBAS legt automatisch dann beim nächsten Mal ein GIT Repository wieder an.
+
 # Requirements / Voraussetzungen
 Für NBAS wird benötigt
+- git
+- mailman
 - php
 - php-curl
 - Ein API Zugang (siehe http://ncm.dpsg.de)
-- Schreibrechte auf die Datei ./nami_curl_cookies.txt für die Cookies
+- Schreibrecht im Ordner ./tmp (für Mailman und NAMI cookies)
 
 # Installation
 - In Zielverzeichnis gehen
@@ -29,6 +40,6 @@ Für NBAS wird benötigt
 `git clone https://github.com/DaSchaef/NBAS.git`
 - config.php.template kopieren nach config.php
 - In config.php die notwendigen Einstellungen/Zugangsdaten setzen
-- NBAS ausführen mit: 
+- NBAS ausführen mit:
 `php index.php`
-- Bitte beachte, dass im Arbeitsverzeichnis eine Datei nami_curl_cookies.txt von NBAS erzeugbar oder beschreibbar sein muss. Dies ist notwendig für die Session-Cookies.
+- Bitte beachte, dass das TMP Verzeichnis .tmp beschreibbar sein muss für Session-Cookies und die Mailman Dateien.

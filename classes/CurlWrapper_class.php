@@ -23,7 +23,8 @@
 
 /** Wrapper Klasse, die das Interface zu CURL herstellt*/
 class CurlWrapper_class {
-        const COOKIE_FILE = "./nami_curl_cookies.txt";
+        const TMP_PATH = "./tmp";
+        const COOKIE_FILE = self::TMP_PATH . "/nami_curl_cookies.txt";
 
         public $body = ""; /// Rohe HTTP (nicht HTTP!) Antwort Body
         public $headers = array(); /// Array mit Header Infos
@@ -50,8 +51,8 @@ class CurlWrapper_class {
             if(!is_callable('curl_init')){
                 throw new RuntimeException("CURL PHP modul ist nicht verfügbar");
             }
-            if(!is_writable ("./")) {
-                throw new RuntimeException("\nKann im aktuellen Verzeichnis keine Datei anlegen\nFür die cookies muss das Programm eine Datei " . self::COOKIE_FILE . " anlegen und schreiben können.\n");
+            if(!is_writable(self::TMP_PATH)) {
+                throw new RuntimeException("\nKann im TMP Verzeichnis keine Datei anlegen\nFür die cookies muss das Programm eine Datei " . self::COOKIE_FILE . " anlegen und schreiben können.\n");
             }
 
             if(file_exists(self::COOKIE_FILE) && !is_writable(self::COOKIE_FILE)) {

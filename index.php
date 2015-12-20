@@ -31,12 +31,25 @@ else {
 }
 
 $nami = new NamiConnection_class($config);
+$mailman = new Mailman_class();
 
 echo("Start Auth\n");
 $nami->auth();
-$mitglieder_email_array = $nami->listMitgliederEmailArray(true, NamiConnection_class::$FIELD_ROVER);
+
+// Iteriere über Einstellungen
+foreach ($config["mailliste_mapping"] as $key => $value) {
+  if(gettype($value) !== "array") {
+      throw new RuntimeException("config[mailliste_mapping] muss ein array sein");
+  }
+
+  $listname = $value[0];
+  $nami_id = $value[1];
+  $leiter = $value[2];
+
+  $mitglieder_email_array = $nami->listMitgliederEmailArray($leiter, $nami_id);
+  $mailman->updateList($mitglieder_email_array, $listname);
+
+}
 echo("Done\n");
 
-$mailman = new Mailman_class();
-$mailman->updateList($mitglieder_email_array, "stavos");
 ?>

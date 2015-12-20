@@ -1,9 +1,16 @@
 <?php
 /** Config Datei mit dem Einträgen für den konkreten NAMI Einsatz.
     Diese Datei muss angepasst werden! */
-
+    include_once 'classes/NamiConnection_class.php';
+    
     $config = array();
     $config["namiserver"] = "https://namitest.dpsg.de/";
     $config["apiuser_mitgliedsnummer"] = "123456";
     $config["apiuser_password"] = "HIERPASSWORT";
+
+    $config["mailliste_mapping"] = array(
+          array("MAILMANLISTENNAME1", NamiConnection_class::$FIELD_WOE,   true), // Listenname, NAMI-API Wert, Leiter (true/false)
+          array("MAILMANLISTENNAME2",     NamiConnection_class::$FIELD_JUPFI, true), // Listenname, NAMI-API Wert, Leiter (true/false)
+          array("MAILMANLISTENNAME3",      NamiConnection_class::$FIELD_ROVER, false), // Listenname, NAMI-API Wert, Leiter (true/false)
+    )
  ?>

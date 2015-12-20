@@ -23,6 +23,8 @@
 
 /** Klasse, welche die Informationen einer Mailing-Liste enthält*/
 class MailmanList_class {
+    const TMP_PATH = "./tmp/";
+
     var $members = array(); /// Array mit Emails
     var $name = ""; /// Name der Liste
 
@@ -37,6 +39,10 @@ class MailmanList_class {
         @param string_array Array mit Emails als String-Array
     */
     function MailmanList_class($name, $string_array) {
+        if(!is_writable(self::TMP_PATH)) {
+            throw new RuntimeException("\nKann im TMP Verzeichnis keine Datei anlegen.\n");
+        }
+
         $type_value = gettype($name);
         if($type_value !== "string") {
             throw new RuntimeException("1. Argument muss String sein " . $type_value);
@@ -63,7 +69,7 @@ class MailmanList_class {
 
     /** Prüft, ob alles ok ist, bei Warnung gibt es falls, bei fehler gibt es eine Exception
         @return true wenn alles ok ist */
-    function checkConditions() {
+    public function checkConditions() {
         if( $this->warning) {
             return false;
         }
@@ -78,10 +84,17 @@ class MailmanList_class {
         return true;
     }
 
+    /** Löscht den Inhalt einer Liste */
+    public function emptyMembers() {
+      $this->warning = false;
+      $this->error = false;
+      $this->members = array();
+    }
+
     /** Ersetzt die Emails einer Liste.
         @param members_new Array mit Email-Strings
     */
-    function replaceMembers($members_new) {
+    public function replaceMembers($members_new) {
         $type_value = gettype($members_new);
         if($type_value !== "array") {
             throw new RuntimeException("Argument muss Array sein " . $type_value);
@@ -111,6 +124,40 @@ class MailmanList_class {
            }
         }
    }
+
+   /** Schreibt die Mitlieder einer Liste in eine Datei, damit sie von Mailman_class mittels add_members
+       geschrieben werden kann */
+   public function write() {
+     if(preg_match("/^[\.\/a-zA-Z][a-zA-Z0-9\.-_]*$/mi", $this->name) !== 1) { // Muss mit Buchstaben anfangen. Prüft ob einzelnes Wort, nur Buchstaben, Zahlenund -_. erlaubt
+         print_r(preg_match("/^[\.\/a-zA-Z][a-zA-Z0-9\.-_]*$/mi", $this->name));
+         throw new RuntimeException("Kein gültiger Listen-Namen, kann aus Sicherheitsgründen nicht hier angegeben werden");
+     }
+
+     if(!file_exists(self::TMP_PATH . $this->name) &&!is_writable(self::TMP_PATH )) {
+         throw new RuntimeException("\nKann " . self::TMP_PATH . " nicht beschreiben\n");
+     }
+
+     if(file_exists(self::TMP_PATH . $this->name) &&!is_writable(self::TMP_PATH . $this->name)) {
+         throw new RuntimeException("\nKann " . self::TMP_PATH . $this->name . " nicht beschreiben\n");
+     }
+
+     // Wenn vorhanden, dann setze Datei unter Verionskontrolle, damit Script nicht Ammok laufen ldap_connect
+     // und Admin blöd da steht ;-)
+     if(file_exists(self::TMP_PATH . $this->name)) {
+       $git = new GitHandler_class(self::TMP_PATH);
+       $git->revision($this->name);
+     }
+
+     $fp = fopen(self::TMP_PATH . $this->name, 'w');
+     // Schreibe Mail in jeweils eine Zeile
+     foreach ($this->members as $key => $email) {
+         if(!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+             throw new RuntimeException("Keine gültige Email: " . $email);
+         }
+         fwrite($fp, $email . "\n");
+     }
+     fclose($fp);
+  }
 
 }
 ?>

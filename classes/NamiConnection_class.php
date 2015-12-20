@@ -58,6 +58,7 @@ class NamiConnection_class {
     public static $FIELD_JUPFI = 2; //untergliederungId
     public static $FIELD_PFADI = 3; //untergliederungId
     public static $FIELD_ROVER = 4; //untergliederungId
+    public static $FIELD_STAVO = 5; //untergliederungId
 
     /** Constructor,
         Initialisiert HttpWrapper und ergänzt relative Urls zu absoluten Urls, damit Intern gearbeitet werden kann.
@@ -218,7 +219,16 @@ class NamiConnection_class {
                 $this->current_message = "Fehler: Kein JSON Entries Objekt in Antwort";
                 throw new RuntimeException($this->current_message);
             }
-           array_push($list_mitglieder, new NamiMitglied_class($value->entries));
+            try {
+               array_push($list_mitglieder, new NamiMitglied_class($value->entries));
+            } catch (Exception $e) {
+              echo("Warnung: Etwas mit dem folgenden NAMI Eintrag is nicht in Ordnung:\n");
+              print_r($value->entries);
+              echo("\n");
+              echo("Exception:\n");
+              print_r($e);
+              echo("\n");
+            }
         }
         return $list_mitglieder;
     }
@@ -231,7 +241,6 @@ class NamiConnection_class {
         $mitglieder = $this->listMitglieder($leiter, $stufe);
         $mitglieder_email_array = array();
         foreach ($mitglieder as $key => $value) {
-            echo($value . "\n");
             array_push($mitglieder_email_array, $value->fields["entries"]["email"]);
         }
         return $mitglieder_email_array;
