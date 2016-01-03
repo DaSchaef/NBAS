@@ -21,17 +21,16 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 include_once 'classes/NamiConnection_class.php';
-include_once 'classes/Mailman_class.php';
+include_once 'classes/MailmanList_class.php';
 
 if(file_exists('config.php')) {
     include 'config.php';
 }
 else {
-    throw new Exception("Achtung! Es muss eine config.php existieren. Ihr könnt euch die config.php.tempplate kopieren und anpassen.", 1);
+    throw new Exception("Achtung! Es muss eine config.php existieren. Ihr könnt euch die config.php.template kopieren und anpassen.", 1);
 }
 
 $nami = new NamiConnection_class($config);
-$mailman = new Mailman_class();
 
 echo("Start Auth\n");
 $nami->auth();
@@ -47,8 +46,12 @@ foreach ($config["mailliste_mapping"] as $key => $value) {
   $leiter = $value[2];
 
   $mitglieder_email_array = $nami->listMitgliederEmailArray($leiter, $nami_id);
-  $mailman->updateList($mitglieder_email_array, $listname);
-
+  $mailman = new MailmanList_class($listname, $config["tmpdir"]);
+  $mailman->replace($mitglieder_email_array);
+  if(file_exists($config["mailliste_additional_dir"] . "/" . $listname)) {
+    $mailman->import($config["mailliste_additional_dir"] . "/" . $listname);
+  }
+  $mailman->update();
 }
 echo("Done\n");
 

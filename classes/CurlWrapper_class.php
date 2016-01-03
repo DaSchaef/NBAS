@@ -23,8 +23,7 @@
 
 /** Wrapper Klasse, die das Interface zu CURL herstellt*/
 class CurlWrapper_class {
-        const TMP_PATH = "./tmp";
-        const COOKIE_FILE = self::TMP_PATH . "/nami_curl_cookies.txt";
+        const COOKIE_FILE = "/nami_curl_cookies.txt";
 
         public $body = ""; /// Rohe HTTP (nicht HTTP!) Antwort Body
         public $headers = array(); /// Array mit Header Infos
@@ -47,16 +46,19 @@ class CurlWrapper_class {
             return $headers;
         }
 
-        function CurlWrapper_class() {
+        function CurlWrapper_class($tmppath = "./") {
+            $this->TMP_PATH = $tmppath;
+            $this->COOKIE_FILE = $tmppath . self::COOKIE_FILE;
+
             if(!is_callable('curl_init')){
                 throw new RuntimeException("CURL PHP modul ist nicht verfügbar");
             }
-            if(!is_writable(self::TMP_PATH)) {
-                throw new RuntimeException("\nKann im TMP Verzeichnis keine Datei anlegen\nFür die cookies muss das Programm eine Datei " . self::COOKIE_FILE . " anlegen und schreiben können.\n");
+            if(!is_writable($this->TMP_PATH)) {
+                throw new RuntimeException("\nKann im TMP Verzeichnis keine Datei anlegen\nFür die cookies muss das Programm eine Datei " . $this->COOKIE_FILE . " anlegen und schreiben können.\n");
             }
 
-            if(file_exists(self::COOKIE_FILE) && !is_writable(self::COOKIE_FILE)) {
-                throw new RuntimeException("\nFür die cookies muss das Programm eine Datei " . self::COOKIE_FILE . " anlegen und schreiben können.\n");
+            if(file_exists($this->COOKIE_FILE) && !is_writable($this->COOKIE_FILE)) {
+                throw new RuntimeException("\nFür die cookies muss das Programm eine Datei " . $this->COOKIE_FILE . " anlegen und schreiben können.\n");
             }
         }
 
@@ -94,9 +96,9 @@ class CurlWrapper_class {
                 $this->prepareGET($url, $params);
             }
 
-            curl_setopt($this->ch, CURLOPT_COOKIEJAR, self::COOKIE_FILE);
+            curl_setopt($this->ch, CURLOPT_COOKIEJAR, $this->COOKIE_FILE);
             if(!$skip_cookies) {
-                curl_setopt($this->ch, CURLOPT_COOKIEFILE, self::COOKIE_FILE);
+                curl_setopt($this->ch, CURLOPT_COOKIEFILE, $this->COOKIE_FILE);
             }
             curl_setopt($this->ch, CURLOPT_RETURNTRANSFER, 1);
             curl_setopt($this->ch, CURLOPT_FOLLOWLOCATION, false);
