@@ -23,7 +23,7 @@
 
 /** Wrapper Klasse, die das Interface zu CURL herstellt*/
 class CurlWrapper_class {
-        const COOKIE_FILE = "/nami_curl_cookies.txt";
+        const COOKIE_FILE = "nami_curl_cookies.txt";
 
         public $body = ""; /// Rohe HTTP (nicht HTTP!) Antwort Body
         public $headers = array(); /// Array mit Header Infos
@@ -46,9 +46,9 @@ class CurlWrapper_class {
             return $headers;
         }
 
-        function CurlWrapper_class($tmppath = "./") {
+        function CurlWrapper_class($tmppath = ".") {
             $this->TMP_PATH = $tmppath;
-            $this->COOKIE_FILE = $tmppath . self::COOKIE_FILE;
+            $this->COOKIE_FILE = $tmppath . "/" . self::COOKIE_FILE;
 
             if(!is_callable('curl_init')){
                 throw new RuntimeException("CURL PHP modul ist nicht verfügbar");

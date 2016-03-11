@@ -17,7 +17,7 @@ Die NBAS Mailman Schnittstelle hält im TMP Verzeichnis die Mailman-Mitglieder u
 Dies is ein Sicherheits-Feature, damit notfalls schnell Änderungen rückgängig gemacht werden können.
 
 Zur Zeit befindet sich NBAS noch in der Entwicklung.
-Die NAMI API Abfrage klappt, die Mailman-Schnittstelle ist noch nicht funktionsfähig.
+Die NAMI API Abfrage klappt, die Mailman-Schnittstelle rudimentär funktionsfähig.
 
 # Datenschutz
 Bitte beachtet, dass die temporären Dateien im tmp Verzeichnis unter GIT Kontrolle gehalten werden.
@@ -43,3 +43,24 @@ Für NBAS wird benötigt
 - NBAS ausführen mit:
 `php index.php`
 - Bitte beachte, dass das TMP Verzeichnis .tmp beschreibbar sein muss für Session-Cookies und die Mailman Dateien.
+
+# Einstellungen
+- `$config["namiserver"]`
+URL unter der NAMI erreichbar ist
+
+- `$config["apiuser_mitgliedsnummer"]`
+Die Mietgliednummer des Nutzers der API Rechte hat
+
+- `$config["apiuser_password"]`
+Das entsprechende Passwort des Nutzers
+
+- `$config["tmpdir"]`
+Das temporäre Verzeichnis muss beschreibbar sein.
+NBAS speichert dort die NAMI Session Cookies und verwatet dort (unter GIT Kontrolle) die Mitgliederlisten der Mailing-Listen als Textdatei.
+
+- `$config["mailliste_additional_dir"]`
+In diesem Verzeichnis sucht NBAS nach einer Textdatei mit dem Namen der Mailingliste. In dieser Textdatei stehen Emailadresse. Pro Zeile eine Emailadresse. Ist eine solche Textdatei vorhanden, liest NBAS diese Zeile für Zeile ein und versucht die Emailadressen zur Mailingliste (definiert durch den Dateinamen) hinzuzufügen.
+
+- `$config["mailliste_mapping"]`
+Hier wird das Mapping von NAMI Einstellungen zu Mailman-Liste gemacht.
+Ein Beispiel ist in der config.php.template zu finden.

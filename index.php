@@ -23,6 +23,8 @@
 include_once 'classes/NamiConnection_class.php';
 include_once 'classes/MailmanList_class.php';
 
+print("NBAS - NAMI Bezirks API Sammlung\n");
+print("Lade config.php\n");
 if(file_exists('config.php')) {
     include 'config.php';
 }
@@ -32,27 +34,42 @@ else {
 
 $nami = new NamiConnection_class($config);
 
-echo("Start Auth\n");
+print("Starte NAMI auth() ...");
 $nami->auth();
+print(" ok\n");
 
 // Iteriere über Einstellungen
-foreach ($config["mailliste_mapping"] as $key => $value) {
+foreach ($config["mailliste_mapping"] as $key => $value) { // Für jeden Eintrag
+  print("Lade Maillingliste");
   if(gettype($value) !== "array") {
       throw new RuntimeException("config[mailliste_mapping] muss ein array sein");
   }
-
+  // Lese Einstellungen für aktuellen Eintrag ein
   $listname = $value[0];
   $nami_id = $value[1];
   $leiter = $value[2];
+  print(" " . $listname . "\n");
 
+  // NAMI Anfrage starten
+  print("Lade Daten aus NAMI ... ");
   $mitglieder_email_array = $nami->listMitgliederEmailArray($leiter, $nami_id);
+  print("ok\n");
+
+  // Daten an Mailman übergeben
+  print("Aktualisiere Maillingliste ... ");
   $mailman = new MailmanList_class($listname, $config["tmpdir"]);
   $mailman->replace($mitglieder_email_array);
+
+  // Wenn es zusätzliche Emails gibt, dann füge diese zu Mailman hinzu
   if(file_exists($config["mailliste_additional_dir"] . "/" . $listname)) {
+    print("\nLade zusätzliche Adressen ... ");
     $mailman->import($config["mailliste_additional_dir"] . "/" . $listname);
+    print("ok\n");
   }
   $mailman->update();
+  print("ok\n");
+  print("\n");
 }
-echo("Done\n");
+print("Done\n");
 
 ?>

@@ -1,6 +1,6 @@
 <?php
 /** Config Datei mit dem Einträgen für den konkreten NAMI Einsatz.
-    Diese Datei muss angepasst werden! */
+    Diese Datei muss angepasst und unter "config.php" gespeichert werden! */
     include_once 'classes/NamiConnection_class.php';
 
     $config = array();

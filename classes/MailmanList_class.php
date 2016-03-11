@@ -33,8 +33,8 @@ class MailmanList_class {
         @param $name Name der Liste
         @param string_array Array mit Emails als String-Array
     */
-    function MailmanList_class($name, $tmppath = "./") {
-        $this->TMP_PATH = $tmppath;
+    function MailmanList_class($name, $tmppath = ".") {
+        $this->TMP_PATH = $tmppath . "/";
 
         if(!is_writable($this->TMP_PATH)) {
             throw new RuntimeException("\nKann im TMP Verzeichnis keine Datei anlegen.\n");
@@ -53,6 +53,10 @@ class MailmanList_class {
             throw new RuntimeException("Kann kein Programm zu add_members findens");
         }
 
+        if(!$this->command_exist("./remove_members")) {
+            throw new RuntimeException("Kann kein Programm zu remove_members findens");
+        }
+
         if(preg_match("/^[\.\/a-zA-Z][a-zA-Z0-9\.-_]*$/mi", $name) !== 1) { // Muss mit Buchstaben anfangen. Prüft ob einzelnes Wort, nur Buchstaben, Zahlenund -_. erlaubt
             throw new RuntimeException("Kein gültiger Listen-Namen, kann aus Sicherheitsgründen nicht hier angegeben werden");
         }
@@ -65,6 +69,12 @@ class MailmanList_class {
         $this->warning = false;
         $this->error = false;
         $this->members = array();
+
+        exec("./list_members -i " . $this->name . " | ./remove_members -f - " . $this->name, $removed, $returncode);
+        if($returncode !== 0) {
+            echo("Warnungen in addmembers\n");
+            echo("Add Members Return Code ist nicht 0: " . $returncode . " " . $removed);
+        }
     }
 
    /** Schreibt die Mitlieder einer Liste in eine Datei, damit sie von Mailman_class mittels add_members
@@ -99,11 +109,11 @@ class MailmanList_class {
        }
        fclose($fp);
 
-       /*exec("./add_members " . $list->name . " " . $email, $added, $returncode);
+       exec("./add_members " . $this->name . " " . $this->TMP_PATH . $this->name, $added, $returncode);
        if($returncode !== 0) {
            echo("Warnungen in addmembers\n");
-           echo("Add Members Return Code ist nicht 0: " . $returncode . " " . $email);
-       }*/
+           echo("Add Members Return Code ist nicht 0: " . $returncode . " " . $added);
+       }
   }
 
   /** Liest Emails aus Liste ein
@@ -120,22 +130,27 @@ class MailmanList_class {
     $this->members = $list_members;
   }
 
- /** Funktion um anhand von Dateiname Mitglieder hinzuzufügen */
- public function import($filename) {
-     $type_value = gettype($filename);
-     if($type_value !== "string") {
-         throw new RuntimeException("1. Argument muss String sein " . $type_value);
-     }
+  /** Funktion um anhand von Dateiname Mitglieder hinzuzufügen */
+  public function import($filename) {
+      $type_value = gettype($filename);
+      if($type_value !== "string") {
+          throw new RuntimeException("1. Argument muss String sein " . $type_value);
+      }
 
-     if(!file_exists($filename)) {
-        throw new RuntimeException($filename . " existiert nicht!");
-     }
+      if(!file_exists($filename)) {
+         throw new RuntimeException($filename . " existiert nicht!");
+      }
 
-     $fp = fopen($filename, 'r');
-     if($fp === FALSE) {
-        throw new RuntimeException("\nKann " . $filename . " nicht öffnen\n");
-     }
- }
+      $fp = fopen($filename, 'r');
+      if($fp === FALSE) {
+         throw new RuntimeException("\nKann " . $filename . " nicht öffnen\n");
+      }
+      while (($line = fgets($fp)) !== false) {
+         $line = str_replace("\n", "", $line);
+         $this->add($line);
+      }
+      fclose($fp);
+  }
 
   /** Aktualisiert die Liste mit neuen Einträgen
       @param newentries_array Neue Einträge als array mit emails als elemente
@@ -152,8 +167,11 @@ class MailmanList_class {
   /** Funktion, welche die Liste mit members befüllt */
   public function add($newentries_array) {
       $type_value = gettype($newentries_array);
-      if($type_value !== "array") {
-          throw new RuntimeException("1. Argument muss Array sein " . $type_value);
+      if($type_value === "string") {
+          $tmp = $newentries_array;
+          $newentries_array = array($tmp);
+      } else if($type_value !== "array") {
+          throw new RuntimeException("1. Argument muss Array oder String sein " . $type_value);
       }
 
       foreach($newentries_array as $key => $line){ // Iterate over each line an search emails
@@ -164,6 +182,11 @@ class MailmanList_class {
              } else {
                  array_push($this->members, $line);
              }
+         } else {
+            if($line !== "") {
+               $this->warning = true;
+               echo("Email ist ungültig? " . $line . "\n");
+            }
          }
       }
   }
