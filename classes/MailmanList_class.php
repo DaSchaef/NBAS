@@ -27,7 +27,11 @@ class MailmanList_class {
     protected $members = array(); /// Array mit Emails
 
     protected $name = ""; /// Name der Liste
-    protected $git;
+    protected $git; /// Git Handler
+
+    const COMMAND_ADD = "./add_members"; /// Kommando mit dem Mitglieder zur Mailingliste hinzugefügt werden
+    const COMMAND_REMOVE = "./remove_members"; /// Kommando mit dem Mitglieder von Mailingliste gelöscht werden
+    const COMMAND_LIST = "./list_members"; /// Kommando mit dem Mitglieder von Mailingliste angezeigt werden
 
     /** Konstruktor
         @param $name Name der Liste
@@ -45,15 +49,15 @@ class MailmanList_class {
             throw new RuntimeException("1. Argument muss String sein " . $type_value);
         }
 
-        if(!$this->command_exist("./list_members")) {
+        if(!$this->command_exist(MailmanList_class::COMMAND_LIST)) {
             throw new RuntimeException("Kann kein Programm zu list_members findens");
         }
 
-        if(!$this->command_exist("./add_members")) {
+        if(!$this->command_exist(MailmanList_class::COMMAND_ADD)) {
             throw new RuntimeException("Kann kein Programm zu add_members findens");
         }
 
-        if(!$this->command_exist("./remove_members")) {
+        if(!$this->command_exist(MailmanList_class::COMMAND_REMOVE)) {
             throw new RuntimeException("Kann kein Programm zu remove_members findens");
         }
 
@@ -70,10 +74,10 @@ class MailmanList_class {
         $this->error = false;
         $this->members = array();
 
-        exec("./list_members -i " . $this->name . " | ./remove_members -f - " . $this->name, $removed, $returncode);
+        exec(MailmanList_class::COMMAND_LIST . " -i " . $this->name . " | " . MailmanList_class::COMMAND_REMOVE . " -f - " . $this->name, $removed, $returncode);
         if($returncode !== 0) {
-            echo("Warnungen in addmembers\n");
-            echo("Add Members Return Code ist nicht 0: " . $returncode . " " . $removed);
+            echo("Warnungen in clear_members\n");
+            echo("clear_members Return Code ist nicht 0: " . $returncode . " " . $removed);
         }
     }
 
@@ -86,13 +90,6 @@ class MailmanList_class {
 
        if(file_exists($this->TMP_PATH . $this->name) &&!is_writable($this->TMP_PATH . $this->name)) {
            throw new RuntimeException("\nKann " . $this->TMP_PATH . $this->name . " nicht beschreiben\n");
-       }
-
-       // Wenn vorhanden, dann setze Datei unter Verionskontrolle, damit Script nicht Ammok laufen kann
-       // und Admin blöd da steht ;-)
-       if(file_exists($this->TMP_PATH . $this->name)) {
-         $git = new GitHandler_class($this->TMP_PATH);
-         $git->revision($this->name);
        }
 
        $fp = fopen($this->TMP_PATH . $this->name, 'w');
@@ -109,7 +106,14 @@ class MailmanList_class {
        }
        fclose($fp);
 
-       exec("./add_members " . $this->name . " " . $this->TMP_PATH . $this->name, $added, $returncode);
+       // Wenn vorhanden, dann setze Datei unter Verionskontrolle, damit Script nicht Ammok laufen kann
+       // und Admin blöd da steht ;-)
+       if(file_exists($this->TMP_PATH . $this->name)) {
+         $git = new GitHandler_class($this->TMP_PATH);
+         $git->revision($this->name);
+       }
+
+       exec(MailmanList_class::COMMAND_ADD . " " . $this->name . " " . $this->TMP_PATH . $this->name, $added, $returncode);
        if($returncode !== 0) {
            echo("Warnungen in addmembers\n");
            echo("Add Members Return Code ist nicht 0: " . $returncode . " " . $added);
@@ -122,7 +126,7 @@ class MailmanList_class {
   */
  public function open() {
     $returncode = 1;
-    exec("./list_members " . $this->name, $list_members, $returncode);
+    exec(MailmanList_class::COMMAND_LIST . " " . $this->name, $list_members, $returncode);
 
     if($returncode !== 0) {
         throw new RuntimeException("List Members Return Code ist nicht 0: " . $returncode);
