@@ -108,7 +108,7 @@ class CurlWrapper_class {
             $output = curl_exec($this->ch);
             $errNo = curl_errno($this->ch);
             if ($errNo) {
-                throw new CurlException($errNo);
+                throw new RuntimeException($errNo . "\n" . curl_error($this->ch));
             }
 
             $info = curl_getinfo($this->ch);
