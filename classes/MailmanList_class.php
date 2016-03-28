@@ -116,7 +116,7 @@ class MailmanList_class {
        exec(MailmanList_class::COMMAND_ADD . " " . $this->name . " -r " . $this->TMP_PATH . $this->name, $added, $returncode);
        if($returncode !== 0) {
            echo("Warnungen in addmembers\n");
-           echo("Add Members Return Code ist nicht 0: " . $returncode . " " . $added);
+           echo("Add Members Return Code ist nicht 0: " . $returncode . " " . implode("\n", $added));
        }
   }
 
