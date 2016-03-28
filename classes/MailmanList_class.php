@@ -74,7 +74,7 @@ class MailmanList_class {
         $this->error = false;
         $this->members = array();
 
-        exec(MailmanList_class::COMMAND_LIST . " -i " . $this->name . " | " . MailmanList_class::COMMAND_REMOVE . " -f - " . $this->name, $removed, $returncode);
+        exec(MailmanList_class::COMMAND_LIST . " " . $this->name . " | " . MailmanList_class::COMMAND_REMOVE . " -f - " . $this->name, $removed, $returncode);
         if($returncode !== 0) {
             echo("Warnungen in clear_members\n");
             echo("clear_members Return Code ist nicht 0: " . $returncode . " " . $removed);
