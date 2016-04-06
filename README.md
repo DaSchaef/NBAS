@@ -64,3 +64,15 @@ In diesem Verzeichnis sucht NBAS nach einer Textdatei mit dem Namen der Mailingl
 - `$config["mailliste_mapping"]`
 Hier wird das Mapping von NAMI Einstellungen zu Mailman-Liste gemacht.
 Ein Beispiel ist in der config.php.template zu finden.
+
+- `$config["skipssl"]`
+Nicht empfohlen! Nur ändern, wenn du dir sicher bist und die folgende Erklärung und deren Auswirkung verstanden hast!
+Wenn diese Einstellung auf true gesetzt wird, dann wird das HTTPS (SSL) Zertifikat von NAMI nicht überprüft.
+Das kann bedeuten, dass sich ein Fremder/Hacker als NAMI dir gegenüber ausgeben könnte (z.b. in einem öffentlichen WLAN)
+und du würdest es nicht bemerken.
+Als Konsequenz daraus könnte dieser Hacker dann deine NAMI Login-Zugangsdaten aufzeichnen und hätte damit dein NAMI Zugang.
+Warum gibt es dann diese Funktion?
+Unser Server Betriebssystem "Debian" hat zur Zeit einen ungelöste Bug, der selten auftritt, aber ausgerechnet mit NAMI ;)
+Egal ob richtig oder falsch: Durch deb Bug denkt die Software *immer*, dass das NAMI Zertifikat gefälscht sei - so kommt man natürlich
+überhaupt nicht an NAMI.
+Bis der Bug in "Debian" gefixt ist, gibt es also diese Option - nochmal: LEIDER!
