@@ -65,7 +65,7 @@ class NamiConnection_class {
         @param config Array mit drei Einträgen: config[apiuser_mitgliedsnummer], config[apiuser_password], config[namiserver]
     */
     function NamiConnection_class($config) {
-        $this->HttpWrapper = new HttpWrapper_class($config["tmpdir"]);
+        $this->HttpWrapper = new HttpWrapper_class($config["tmpdir"], $config["skipssl"]);
         if(gettype($config) !== "array") {
             $this->connection_status = "ERR";
             $this->current_message = "Fehler: Parameter ist kein Array";

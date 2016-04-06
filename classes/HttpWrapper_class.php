@@ -36,11 +36,11 @@ class HttpWrapper_class {
     );
 
 
-    function HttpWrapper_class($tmpdir = "./") {
+    function HttpWrapper_class($tmpdir = "./", $skipssl = FALSE) {
         if(!is_callable('json_encode')){
                 throw new RuntimeException("JSON PHP modul ist nicht verfügbar");
         }
-        $this->CurlWrapper = new CurlWrapper_class($tmpdir);
+        $this->CurlWrapper = new CurlWrapper_class($tmpdir, $skipssl);
     }
 
    /** Generic Request Function with error checking

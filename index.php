@@ -57,7 +57,7 @@ foreach ($config["mailliste_mapping"] as $key => $value) { // Für jeden Eintrag
 
   // Daten an Mailman übergeben
   print("Aktualisiere Maillingliste ... ");
-  $mailman = new MailmanList_class($listname, $config["tmpdir"]);
+  $mailman = new MailmanList_class($listname, $config["tmpdir"], $config["skipssl"]);
   $mailman->replace($mitglieder_email_array);
 
   // Wenn es zusätzliche Emails gibt, dann füge diese zu Mailman hinzu

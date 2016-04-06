@@ -30,6 +30,11 @@ class CurlWrapper_class {
         public $httpcode = 0; /// HTTP Return Code
         public $cookies = array(); /// Cookie Array
         protected $ch = NULL; /// Curl Handler
+        protected $TMP_PATH = "."; // Pfad für temporäre Daten und Cookies
+        protected $COOKIE_FILE = ""; // Name des Cookies File, inkl. Pfad (!)
+        protected $SKIPSSL = false; // Wenn true, wird SSL Verbindungszertifikate nicht überprüft.
+                                   // Das ist ein bescheuerter Workaraound, aber Debian kommt zur Zeit nicht
+                                   // mit dem NAMI Zertifikat zurecht. (openssl bug)
 
         /** Interne Funktion, die ein Header String in ein Array verwandelt.
         @param $header_text Header STring
@@ -46,9 +51,14 @@ class CurlWrapper_class {
             return $headers;
         }
 
-        function CurlWrapper_class($tmppath = ".") {
+        /** Konstruktor.
+        @param tmppath Pfad zu temporären Daten wie Cookies, darf nicht mit / enden!
+        @param skipssl Gefährliche Einstellung. Ändere es nur auf true, wenn du Ahnung davon hast!
+        */
+        function CurlWrapper_class($tmppath = ".", $skipssl = false) {
             $this->TMP_PATH = $tmppath;
             $this->COOKIE_FILE = $tmppath . "/" . self::COOKIE_FILE;
+            $this->SKIPSSL = $skipssl;
 
             if(!is_callable('curl_init')){
                 throw new RuntimeException("CURL PHP modul ist nicht verfügbar");
@@ -102,8 +112,12 @@ class CurlWrapper_class {
             }
             curl_setopt($this->ch, CURLOPT_RETURNTRANSFER, 1);
             curl_setopt($this->ch, CURLOPT_FOLLOWLOCATION, false);
-            curl_setopt($this->ch, CURLOPT_RETURNTRANSFER, 1);
             curl_setopt($this->ch, CURLOPT_HEADER, true);
+
+            // Gefährlich! Mach das nur, wenn du Ahnung davon hast
+            if($this->SKIPSSL === TRUE) {
+              curl_setopt($this->ch, CURLOPT_SSL_VERIFYPEER, false);
+            }
 
             $output = curl_exec($this->ch);
             $errNo = curl_errno($this->ch);

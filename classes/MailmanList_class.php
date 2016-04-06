@@ -29,9 +29,9 @@ class MailmanList_class {
     protected $name = ""; /// Name der Liste
     protected $git; /// Git Handler
 
-    const COMMAND_ADD = "add_members"; /// Kommando mit dem Mitglieder zur Mailingliste hinzugefügt werden
-    const COMMAND_REMOVE = "remove_members"; /// Kommando mit dem Mitglieder von Mailingliste gelöscht werden
-    const COMMAND_LIST = "list_members"; /// Kommando mit dem Mitglieder von Mailingliste angezeigt werden
+    const COMMAND_ADD = "./add_members"; /// Kommando mit dem Mitglieder zur Mailingliste hinzugefügt werden
+    const COMMAND_REMOVE = "./remove_members"; /// Kommando mit dem Mitglieder von Mailingliste gelöscht werden
+    const COMMAND_LIST = "./list_members"; /// Kommando mit dem Mitglieder von Mailingliste angezeigt werden
 
     /** Konstruktor
         @param $name Name der Liste
@@ -50,15 +50,15 @@ class MailmanList_class {
         }
 
         if(!$this->command_exist(MailmanList_class::COMMAND_LIST)) {
-            throw new RuntimeException("Kann kein Programm zu list_members findens");
+            throw new RuntimeException("Kann kein Programm zu list_members finden");
         }
 
         if(!$this->command_exist(MailmanList_class::COMMAND_ADD)) {
-            throw new RuntimeException("Kann kein Programm zu add_members findens");
+            throw new RuntimeException("Kann kein Programm zu add_members finden");
         }
 
         if(!$this->command_exist(MailmanList_class::COMMAND_REMOVE)) {
-            throw new RuntimeException("Kann kein Programm zu remove_members findens");
+            throw new RuntimeException("Kann kein Programm zu remove_members finden");
         }
 
         if(preg_match("/^[\.\/a-zA-Z][a-zA-Z0-9\.-_]*$/mi", $name) !== 1) { // Muss mit Buchstaben anfangen. Prüft ob einzelnes Wort, nur Buchstaben, Zahlenund -_. erlaubt
@@ -90,6 +90,11 @@ class MailmanList_class {
 
        if(file_exists($this->TMP_PATH . $this->name) &&!is_writable($this->TMP_PATH . $this->name)) {
            throw new RuntimeException("\nKann " . $this->TMP_PATH . $this->name . " nicht beschreiben\n");
+       }
+
+       $was_sorted = asort($this->members, SORT_REGULAR|SORT_STRING|SORT_NATURAL|SORT_FLAG_CASE);
+       if($was_sorted === FALSE) {
+         throw new RuntimeException("\nEs ist etwas beim Sortieren falsch gelaufen\n");
        }
 
        $fp = fopen($this->TMP_PATH . $this->name, 'w');
