@@ -16,9 +16,6 @@ Dadurch müssen die Stammesvorstände nur noch ein Datensatz verwalten und könn
 Die NBAS Mailman Schnittstelle hält im TMP Verzeichnis die Mailman-Mitglieder unter GIT Verwaltung.
 Dies is ein Sicherheits-Feature, damit notfalls schnell Änderungen rückgängig gemacht werden können.
 
-Zur Zeit befindet sich NBAS noch in der Entwicklung.
-Die NAMI API Abfrage klappt, die Mailman-Schnittstelle rudimentär funktionsfähig.
-
 # Datenschutz
 Bitte beachtet, dass die temporären Dateien im tmp Verzeichnis unter GIT Kontrolle gehalten werden.
 Aus Gründen des Datenschutzes solltet ihr das Verzeichnis regelmäßig leeren (nicht löschen!) und dabei auch
