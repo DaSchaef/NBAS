@@ -29,9 +29,9 @@ class MailmanList_class {
     protected $name = ""; /// Name der Liste
     protected $git; /// Git Handler
 
-    const COMMAND_ADD = "./add_members"; /// Kommando mit dem Mitglieder zur Mailingliste hinzugefügt werden
-    const COMMAND_REMOVE = "./remove_members"; /// Kommando mit dem Mitglieder von Mailingliste gelöscht werden
-    const COMMAND_LIST = "./list_members"; /// Kommando mit dem Mitglieder von Mailingliste angezeigt werden
+    const COMMAND_ADD = "add_members"; /// Kommando mit dem Mitglieder zur Mailingliste hinzugefügt werden
+    const COMMAND_REMOVE = "remove_members"; /// Kommando mit dem Mitglieder von Mailingliste gelöscht werden
+    const COMMAND_LIST = "list_members"; /// Kommando mit dem Mitglieder von Mailingliste angezeigt werden
 
     /** Konstruktor
         @param $name Name der Liste
