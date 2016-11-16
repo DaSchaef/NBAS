@@ -59,6 +59,7 @@ class NamiConnection_class {
     public static $FIELD_PFADI = 3; //untergliederungId
     public static $FIELD_ROVER = 4; //untergliederungId
     public static $FIELD_STAVO = 5; //untergliederungId
+    public static $FIELD_KURAT = 1011; //taetigkeitId
 
     /** Constructor,
         Initialisiert HttpWrapper und ergänzt relative Urls zu absoluten Urls, damit Intern gearbeitet werden kann.
@@ -176,12 +177,24 @@ class NamiConnection_class {
         }
 
         // Setze Suchwerte in JSON Suchobjekt
-        $this->search_json->untergliederungId = $stufe;
+
         if($leiter) {
             $this->search_json->taetigkeitId = NamiConnection_class::$FIELD_LEITER;
         } else {
             $this->search_json->taetigkeitId = "";
         }
+
+        // Workaround um nach Tätigkeit suchen zu können
+        if($stufe >= 1000 && !$leiter) {
+          $this->search_json->taetigkeitId = $stufe-1000;
+          $this->search_json->untergliederungId = "";
+        } else if ($stufe < 1000){
+          $this->search_json->untergliederungId = $stufe;
+        } else {
+          $this->current_message = "Fehler: Ungültige Tätigkeit/Leiter Kombination.";
+          throw new RuntimeException($this->current_message);
+        }
+        // Ende Workaround
 
         // Bauə Parameter für Anfrage zusammen
         $list_params = array(

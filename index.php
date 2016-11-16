@@ -46,25 +46,42 @@ foreach ($config["mailliste_mapping"] as $key => $value) { // Für jeden Eintrag
   }
   // Lese Einstellungen für aktuellen Eintrag ein
   $listname = $value[0];
-  $nami_id = $value[1];
+  $nami_ids = $value[1];
   $leiter = $value[2];
-  print(" " . $listname . "\n");
 
-  // NAMI Anfrage starten
-  print("Lade Daten aus NAMI ... ");
-  $mitglieder_email_array = $nami->listMitgliederEmailArray($leiter, $nami_id);
-  print("ok\n");
+
+  if(gettype($nami_ids) != "array") { // Erlaube einzelne oder mehrere IDs
+    $idval = $nami_ids;
+    $nami_ids = array();
+    $nami_ids[] = $idval;
+  }
 
   // Daten an Mailman übergeben
   print("Aktualisiere Maillingliste ... ");
   $mailman = new MailmanList_class($listname, $config["tmpdir"], $config["skipssl"]);
-  $mailman->replace($mitglieder_email_array);
 
-  // Wenn es zusätzliche Emails gibt, dann füge diese zu Mailman hinzu
-  if(file_exists($config["mailliste_additional_dir"] . "/" . $listname)) {
-    print("\nLade zusätzliche Adressen ... ");
-    $mailman->import($config["mailliste_additional_dir"] . "/" . $listname);
+  $firstrun = true; // Variable um nur beim ersten Mal die Liste zu löschen
+  foreach ($nami_ids as $nami_ids_i => $nami_id) {
+    print(" " . $listname . "\n");
+
+    // NAMI Anfrage starten
+    print("Lade Daten aus NAMI ... ");
+    $mitglieder_email_array = $nami->listMitgliederEmailArray($leiter, $nami_id);
     print("ok\n");
+
+    if($firstrun) {
+      $mailman->replace($mitglieder_email_array);
+    } else {
+      $mailman->add($mitglieder_email_array);
+    }
+
+    // Wenn es zusätzliche Emails gibt, dann füge diese zu Mailman hinzu
+    if($firstrun && file_exists($config["mailliste_additional_dir"] . "/" . $listname)) {
+      print("\nLade zusätzliche Adressen ... ");
+      $mailman->import($config["mailliste_additional_dir"] . "/" . $listname);
+      print("ok\n");
+    }
+    $firstrun = false;
   }
   $mailman->update();
   print("ok\n");
