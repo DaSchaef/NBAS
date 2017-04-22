@@ -27,6 +27,7 @@ class MailmanList_class {
     protected $members = array(); /// Array mit Emails
 
     protected $name = ""; /// Name der Liste
+    protected $config; /// Config Array
     protected $git; /// Git Handler
 
     const COMMAND_ADD = "add_members"; /// Kommando mit dem Mitglieder zur Mailingliste hinzugefügt werden
@@ -37,9 +38,10 @@ class MailmanList_class {
         @param $name Name der Liste
         @param string_array Array mit Emails als String-Array
     */
-    function MailmanList_class($name, $tmppath = ".") {
-        $this->TMP_PATH = $tmppath . "/";
-
+    function MailmanList_class($name, $config) {
+        $this->TMP_PATH = $config["tmpdir"] . "/";
+        $this->config = $config;
+        
         if(!is_writable($this->TMP_PATH)) {
             throw new RuntimeException("\nKann im TMP Verzeichnis keine Datei anlegen.\n");
         }
@@ -66,6 +68,7 @@ class MailmanList_class {
         }
 
         $this->name = $name;
+
     }
 
     /** Löscht den Inhalt einer Liste */
@@ -74,10 +77,12 @@ class MailmanList_class {
         $this->error = false;
         $this->members = array();
 
-        exec(MailmanList_class::COMMAND_LIST . " " . $this->name . " | " . MailmanList_class::COMMAND_REMOVE . " -f - " . $this->name, $removed, $returncode);
-        if($returncode !== 0) {
-            echo("Warnungen in clear_members\n");
-            echo("clear_members Return Code ist nicht 0: " . $returncode . " " . $removed);
+        if(!$this->config["disable_mailman"]) {
+          exec(MailmanList_class::COMMAND_LIST . " " . $this->name . " | " . MailmanList_class::COMMAND_REMOVE . " -f - " . $this->name, $removed, $returncode);
+          if($returncode !== 0) {
+              echo("Warnungen in clear_members\n");
+              echo("clear_members Return Code ist nicht 0: " . $returncode . " " . $removed);
+          }
         }
     }
 
@@ -118,11 +123,13 @@ class MailmanList_class {
          $git->revision($this->name);
        }
 
-       exec(MailmanList_class::COMMAND_ADD . " -r " . $this->TMP_PATH . $this->name . " " . $this->name, $added, $returncode);
-       if($returncode !== 0) {
-           echo("Warnungen in addmembers\n");
-           echo("Add Members Return Code ist nicht 0: " . $returncode . " " . implode("\n", $added));
-       }
+       if(!$this->config["disable_mailman"]) {
+         exec(MailmanList_class::COMMAND_ADD . " -r " . $this->TMP_PATH . $this->name . " " . $this->name, $added, $returncode);
+         if($returncode !== 0) {
+             echo("Warnungen in addmembers\n");
+             echo("Add Members Return Code ist nicht 0: " . $returncode . " " . implode("\n", $added));
+         }
+      }
   }
 
   /** Liest Emails aus Liste ein
@@ -131,10 +138,14 @@ class MailmanList_class {
   */
  public function open() {
     $returncode = 1;
-    exec(MailmanList_class::COMMAND_LIST . " " . $this->name, $list_members, $returncode);
+    if(!$this->config["disable_mailman"]) {
+      exec(MailmanList_class::COMMAND_LIST . " " . $this->name, $list_members, $returncode);
 
-    if($returncode !== 0) {
-        throw new RuntimeException("List Members Return Code ist nicht 0: " . $returncode);
+      if($returncode !== 0) {
+          throw new RuntimeException("List Members Return Code ist nicht 0: " . $returncode);
+      }
+    } else {
+      $list_members = array();
     }
     $this->members = $list_members;
   }
@@ -204,6 +215,10 @@ class MailmanList_class {
       @param $cmd: Kommando Name
       @return true oder false je nach dem ob Kommando verfügbar ist*/
   protected function command_exist($cmd) {
+      if($this->config["disable_mailman"]) {
+        return true;
+      }
+
       $type_value = gettype($cmd);
       if($type_value !== "string") {
           throw new RuntimeException("1. Argument muss String sein " . $type_value);

@@ -58,7 +58,7 @@ foreach ($config["mailliste_mapping"] as $key => $value) { // Für jeden Eintrag
 
   // Daten an Mailman übergeben
   print("Aktualisiere Maillingliste ... ");
-  $mailman = new MailmanList_class($listname, $config["tmpdir"], $config["skipssl"]);
+  $mailman = new MailmanList_class($listname, $config);
 
   $firstrun = true; // Variable um nur beim ersten Mal die Liste zu löschen
   foreach ($nami_ids as $nami_ids_i => $nami_id) {

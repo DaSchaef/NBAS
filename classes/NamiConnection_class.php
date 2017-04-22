@@ -214,6 +214,17 @@ class NamiConnection_class {
             throw new RuntimeException($this->current_message);
         }
 
+        // Workaround for NAMI 2.2, as we don't know what API will do, I try to support both use-cases
+        $oldapi = true;
+        if(!isset($list_response->json->response->data)) {
+          // Emulate Old API
+          if(isset($list_response->json->data) && gettype($list_response->json->data) == "array") {
+              $list_response->json->response = new stdClass();
+              $list_response->json->response->data = $list_response->json->data;
+              $oldapi = false;
+          }
+        }
+
         if(!isset($list_response->json->response->data)) {
             print_r($list_response->json);
             $this->connection_status = "ERR";
@@ -226,22 +237,57 @@ class NamiConnection_class {
         }
 
         // Erzeuge Rückgabe-Array
-        foreach ($list_response->json->response->data as $key => $value) {
-           if(!isset($value->entries)) {
-                $this->connection_status = "ERR";
-                $this->current_message = "Fehler: Kein JSON Entries Objekt in Antwort";
-                throw new RuntimeException($this->current_message);
-            }
-            try {
-               array_push($list_mitglieder, new NamiMitglied_class($value->entries));
-            } catch (Exception $e) {
-              echo("Warnung: Etwas mit dem folgenden NAMI Eintrag is nicht in Ordnung:\n");
-              print_r($value->entries);
-              echo("\n");
-              echo("Exception:\n");
-              print_r($e);
-              echo("\n");
-            }
+        if($oldapi) {
+          foreach ($list_response->json->response->data as $key => $value) {
+             if(!isset($value->entries)) {
+                  $this->connection_status = "ERR";
+                  $this->current_message = "Fehler: Kein JSON Entries Objekt in Antwort";
+                  throw new RuntimeException($this->current_message);
+              }
+              try {
+                 array_push($list_mitglieder, new NamiMitglied_class($value->entries));
+              } catch (Exception $e) {
+                echo("Warnung: Etwas mit dem folgenden NAMI Eintrag is nicht in Ordnung:\n");
+                print_r($value->entries);
+                echo("\n");
+                echo("Exception:\n");
+                print_r($e);
+                echo("\n");
+              }
+          }
+        } else {
+          if(gettype($list_response->json->response->data) !== "array") {
+               $this->connection_status = "ERR";
+               $this->current_message = "Fehler: Kein JSON Entries Array in Antwort: " . gettype($list_response->json->response->data);
+               throw new RuntimeException($this->current_message);
+           }
+          foreach ($list_response->json->response->data as $key => $value) {
+
+              // Emulate Old API
+              $newentries =  new stdClass();
+              foreach ($value as $key2 => $entry) {
+                $newkey = str_replace("entries_", "", $key2);
+                $newentries->$newkey = $entry;
+              }
+
+              $value = new stdClass();
+              $value->entries = $newentries;
+
+              // Missing fields in new API
+              $value->entries->gruppierung = "";
+              $value->entries->gruppierungId = 0;
+
+              try {
+                 array_push($list_mitglieder, new NamiMitglied_class($value->entries));
+              } catch (Exception $e) {
+                echo("Warnung: Etwas mit dem folgenden NAMI Eintrag is nicht in Ordnung:\n");
+                print_r($value->entries);
+                echo("\n");
+                echo("Exception:\n");
+                print_r($e);
+                echo("\n");
+              }
+          }
         }
         return $list_mitglieder;
     }

@@ -18,6 +18,9 @@
           array("Stavos",     NamiConnection_class::$FIELD_STAVO, false), // Listenname, NAMI-API Wert, Leiter (true/false)
     );
 
+    // Auf True setzen, wenn man kein mailman am laufen hat und nur die Funktionen lokal testen möchte
+    $config["disable_mailman"] = false;
+
     // Nicht empfohlen! Nur ändern, wenn du dir sicher bist und die folgende Erklärung und deren Auswirkung verstanden hast!
     // Wenn diese Einstellung auf true gesetzt wird, dann wird das HTTPS (SSL) Zertifikat von NAMI nicht überprüft.
     // Das kann bedeuten, dass sich ein Fremder/Hacker als NAMI dir gegenüber ausgeben könnte (z.b. in einem öffentlichen WLAN)
