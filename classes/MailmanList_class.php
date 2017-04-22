@@ -39,9 +39,21 @@ class MailmanList_class {
         @param string_array Array mit Emails als String-Array
     */
     function MailmanList_class($name, $config) {
+        if(gettype($config) !== "array") {
+            throw new RuntimeException("\nFehler: Config Parameter ist kein Array");
+        }
+
+        if(!isset($config["disable_mailman"])) {
+          throw new RuntimeException("\nFehler: Config Parameter disable_mailman is not set to true or false");
+        }
+
+        if(!isset($config["tmpdir"])) {
+          throw new RuntimeException("\nFehler: Config Parameter tmpdir is not set to true or false");
+        }
+
         $this->TMP_PATH = $config["tmpdir"] . "/";
         $this->config = $config;
-        
+
         if(!is_writable($this->TMP_PATH)) {
             throw new RuntimeException("\nKann im TMP Verzeichnis keine Datei anlegen.\n");
         }
